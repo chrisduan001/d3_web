@@ -1,7 +1,6 @@
 import { combineReducers } from 'redux';
+import landingReducer from "./landing/landingReducer";
 
-const rootReducer = combineReducers({
-  state: (state = {}) => state
+export default combineReducers({
+    landing: landingReducer
 });
-
-export default rootReducer;

@@ -1,0 +1,6 @@
+/**
+ * Created with template on 1/26/18.
+ */
+export const LANDING_SUBMIT_FORM = "LANDING_SUBMIT_FORM";
+export const LANDING_CHANGE_ROOM_NUMBER = "LANDING_CHANGE_ROOM_NUMBER";
+export const LANDING_CHANGE_USER_NAME = "LANDING_CHANGE_USER_NAME";

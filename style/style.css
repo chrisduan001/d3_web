@@ -1,0 +1,18 @@
+/*landing page*/
+.landingContainer {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.landingRoomNumber {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.landingUserName {
+    margin-bottom: 10px;
+}
