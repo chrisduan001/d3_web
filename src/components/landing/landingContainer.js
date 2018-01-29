@@ -6,8 +6,8 @@ import landingForm from "./landingPage";
 import * as actionType from "../../shared/types";
 
 const mapStateToProps = ({landing}) => {
-    const {roomNumber, userName} = landing;
-    return {roomNumber, userName};
+    const {roomNumber, userName, loading, errorMessage} = landing;
+    return {roomNumber, userName, loading, errorMessage};
 };
 
 const mapDispatchToProps = (dispatch) => {
@@ -20,6 +20,9 @@ const mapDispatchToProps = (dispatch) => {
         },
         onSubmit: (roomNumber, userName) => {
             dispatch({type: actionType.LANDING_SUBMIT_FORM, payload: {roomNumber, userName}});
+        },
+        onError: (message) => {
+            dispatch({type: actionType.ON_ERROR, payload: message});
         }
     }
 };
