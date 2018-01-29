@@ -8,8 +8,8 @@ import {SOCKET_ENTER_ROOM, SOCKET_ERROR} from "../../shared/types";
 
 class landingForm extends Component {
     componentWillMount() {
-        this.enterRoomEmitter = _emitter.addListener(SOCKET_ENTER_ROOM, () => {
-            console.log("entered chat room");
+        this.enterRoomEmitter = _emitter.addListener(SOCKET_ENTER_ROOM, (msg) => {
+            console.log(msg + " has entered chat room");
         });
 
         this.errorEmitter = _emitter.addListener(SOCKET_ERROR, (msg) => {

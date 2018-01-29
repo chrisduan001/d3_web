@@ -9,12 +9,6 @@ import _ from "lodash";
 const enterChatRoomEpic = (action$, store) => {
     return action$.ofType(LANDING_SUBMIT_FORM)
         .switchMap(action => {
-            // if (action.payload === undefined) {
-            //     socket.disConnectSocket();
-            // } else {
-            //
-            // }
-
             const {roomNumber, userName} = action.payload;
 
             if (_.isEmpty(userName) || _.isEmpty(roomNumber)) {

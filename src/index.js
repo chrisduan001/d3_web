@@ -18,6 +18,20 @@ const store = createStore(reducers, {}, middleware);
 
 export const _emitter = new EventEmitter();
 
+const appConfig = {
+    prod: {
+        mode: "prod",
+        baseUrl: ""
+    },
+
+    dev: {
+        mode: "dev",
+        baseUrl: "http://localhost:1337"
+    }
+};
+
+window.config = process.env.NODE_ENV === "production" ? appConfig.prod : appConfig.dev;
+
 ReactDOM.render(
   <Provider store={store}>
     <App />

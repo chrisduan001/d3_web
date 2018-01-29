@@ -5,12 +5,14 @@ import io from "socket.io-client";
 import {SOCKET_ERROR, SOCKET_ENTER_ROOM, SOCKET_DISCONNECT} from "../shared/types";
 import { _emitter } from "../index";
 
-let socket;
 export const connectSocket = (roomNumber, userName) => {
-    socket = io.connect("http://localhost:1337", {query: {userName, roomNumber}});
+    const config = window.config;
+    const socket = io.connect(config.baseUrl, {query: {userName, roomNumber}});
 
-    socket.on("connect", () => {
-        _emitter.emit(SOCKET_ENTER_ROOM);
+    socket.on("connect", () => {});
+
+    socket.on("join room", data => {
+        _emitter.emit(SOCKET_ENTER_ROOM, data.userName);
     });
 
     socket.on("disconnect", () => {
@@ -21,8 +23,4 @@ export const connectSocket = (roomNumber, userName) => {
         _emitter.emit(SOCKET_ERROR, "Room full, only support 2 people at the moment");
         socket.disconnect();
     });
-};
-
-export const disConnectSocket = () => {
-    socket.disconnect();
 };
