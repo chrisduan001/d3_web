@@ -15,7 +15,7 @@ const mapDispatchToProps = (dispatch) => {
         loadRoomInfo: () => {
             dispatch({type: actionType.CHATTING_GET_ROOM_INFO});
         },
-        onGetRoomInfo: (users) => {
+        onGotRoomInfo: (users) => {
             dispatch({type: actionType.CHATTING_ROOM_INFO, payload: users})
         },
         onGuestJoinRoom: (guestName) => {
@@ -26,6 +26,15 @@ const mapDispatchToProps = (dispatch) => {
         },
         onTypeMessage: (message) => {
             dispatch({type: actionType.CHATTING_INPUT_MESSAGE, payload: message});
+        },
+        startVoiceCall: () => {
+            dispatch({type: actionType.CHATTING_START_VOICE_CALL});
+        },
+        startVideoCall: () => {
+            dispatch({type: actionType.CHATTING_START_VIDEO_CALL});
+        },
+        sendMessage: (userName, message) => {
+            dispatch({type: actionType.CHATTING_SEND_MESSAGE, payload: {userName, message}})
         }
     }
 };

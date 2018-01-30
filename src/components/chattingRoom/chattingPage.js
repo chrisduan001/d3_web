@@ -13,10 +13,13 @@ class chattingPage extends Component {
         this.userName = this.props.history.location.state.userName;
 
         this.roomInfoEmitter = _emitter.addListener(SOCKET_ROOM_INFO, ({message}) => {
-            this.props.onGetRoomInfo(_.find(message, (user) => user !== this.userName));
+            console.log("on get room info");
+            this.props.onGotRoomInfo(_.find(message, (user) => user !== this.userName));
         });
 
         this.enterRoomEmitter = _emitter.addListener(SOCKET_ENTER_ROOM, (userName) => {
+            console.log("on guest join room");
+            //start signaling process
             this.props.onGuestJoinRoom(userName);
         });
 
@@ -55,17 +58,26 @@ class chattingPage extends Component {
     }
 
     renderUserSection() {
+        const {guestName, startVoiceCall, startVideoCall} = this.props;
         return (
             <div className="userSection">
                 <div className="userContainer">
                     <b>{this.userName}</b>
                 </div>
                 {
-                    _.isEmpty(this.props.guestName) ? null :
+                    _.isEmpty(guestName) ? null :
                         <div className="userContainer">
-                            <b>{this.props.guestName}</b>
-                            <img className="voiceCallIcon" src="../../../src/shared/images/phone.png" />
-                            <img className="videoCallIcon" src="../../../src/shared/images/video.png" />
+                            <b>{guestName}</b>
+                            <img
+                                className="voiceCallIcon"
+                                src="../../../src/shared/images/phone.png"
+                                onClick={startVoiceCall}
+                            />
+                            <img
+                                className="videoCallIcon"
+                                src="../../../src/shared/images/video.png"
+                                onClick={startVideoCall}
+                            />
                         </div>
                 }
 
@@ -74,7 +86,15 @@ class chattingPage extends Component {
     }
 
     render() {
-        const {loading, errorMessage, videoActivated, callActivated, messageInput, onTypeMessage} = this.props;
+        const {
+            loading,
+            errorMessage,
+            videoActivated,
+            callActivated,
+            messageInput,
+            onTypeMessage,
+            sendMessage
+        } = this.props;
 
         if (errorMessage) {
             return (
@@ -108,7 +128,12 @@ class chattingPage extends Component {
                                   value={messageInput}
                         />
 
-                        <button className="btn btn-primary" type="submit">Send</button>
+                        <button
+                            className="btn btn-primary"
+                            type="submit"
+                            onClick={v => sendMessage(this.userName, messageInput)}
+                        >Send</button>
+
                     </div>
                 </div>
             </div>
@@ -125,10 +150,13 @@ chattingPage.propTypes = {
     guestName: PropTypes.string,
     messageInput: PropTypes.string,
     loadRoomInfo: PropTypes.func.isRequired,
-    onGetRoomInfo: PropTypes.func.isRequired,
+    onGotRoomInfo: PropTypes.func.isRequired,
     onGuestJoinRoom: PropTypes.func.isRequired,
     onGuestLeaveRoom: PropTypes.func.isRequired,
-    onTypeMessage: PropTypes.func.isRequired
+    onTypeMessage: PropTypes.func.isRequired,
+    startVoiceCall: PropTypes.func.isRequired,
+    startVideoCall: PropTypes.func.isRequired,
+    sendMessage: PropTypes.func.isRequired
 };
 
 chattingPage.contextTypes = {

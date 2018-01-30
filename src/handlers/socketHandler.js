@@ -10,6 +10,7 @@ import {
     SOCKET_USER_DISCONNECTED
 } from "../shared/types";
 import { _emitter } from "../index";
+import * as webRtc from "./webRtcHandler";
 
 let socket;
 export const connectSocket = (roomNumber, userName) => {
@@ -34,6 +35,14 @@ export const connectSocket = (roomNumber, userName) => {
     socket.on(SOCKET_SEND_ROOM_INFO, (message) => {
         _emitter.emit(SOCKET_ROOM_INFO, message);
     });
+
+    socket.on("receive_sdp", (data) => {
+        webRtc.receiveSdp(data.message);
+    });
+
+    socket.on("receive_ice_candidate", data => {
+        webRtc.receiveIceCandidate(data.message);
+    })
 };
 
 export const emitSocketMessage = (type, message = {}) => {
@@ -44,3 +53,14 @@ export const isSocketValid = () => {
     console.log(socket);
     return socket !== undefined;
 };
+
+//web rtc action
+export const sendIceCandidate = (candidate) => {
+    socket.emit("ice_candidate", {message: {candidate}});
+    console.log("send ice candidate");
+};
+
+export const sendSdp = (sdp) => {
+    socket.emit("send_sdp", {message: {sdp}});
+};
+
