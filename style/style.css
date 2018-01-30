@@ -17,6 +17,92 @@
     margin-bottom: 10px;
 }
 
+/*chatting page*/
+.chatContainer {
+    flex: 1;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+}
+
+.videoContainer {
+    flex: 3;
+    display: flex;
+    flex-direction: column;
+}
+
+.userSection {
+    flex: 1;
+    display: flex;
+    border-top: solid gainsboro 2px;
+    border-right: solid gainsboro 2px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.voiceCallIcon {
+    width: 30px;
+    height: 30px;
+    margin-left: 10px;
+    border: solid gainsboro 2px;
+}
+
+.videoCallIcon {
+    width: 30px;
+    height: 30px;
+    margin-left: 10px;
+    border: solid gainsboro 2px;
+}
+
+.videoSection {
+    flex: 9;
+    display: flex;
+    border-right: solid gainsboro 2px;
+    flex-direction: column;
+}
+
+.voiceSection {
+    flex: 9;
+    display: flex;
+    border-right: solid gainsboro 2px;
+    justify-content: center;
+    align-items: center;
+}
+
+.activeUserVideo {
+    display: flex;
+    flex: 8;
+    justify-content: center;
+    align-items: center;
+}
+
+.activeMyVideo {
+    display: flex;
+    flex: 2;
+    justify-content: flex-end;
+    align-items: flex-end;
+}
+
+.messageContainer {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+}
+
+.messageBox {
+    flex: 9;
+    display: flex;
+    justify-content: center;
+}
+
+.inputBox {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-top: solid gainsboro 2px;
+}
 
 /*common*/
 .toggleVisible {

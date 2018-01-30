@@ -6,6 +6,7 @@ import { createStore, applyMiddleware, compose } from 'redux';
 import { createEpicMiddleware } from 'redux-observable';
 
 import { EventEmitter } from 'fbemitter';
+import {BrowserRouter} from 'react-router-dom';
 
 import App from './components/app';
 import rootEpic from './handlers';
@@ -34,7 +35,9 @@ window.config = process.env.NODE_ENV === "production" ? appConfig.prod : appConf
 
 ReactDOM.render(
   <Provider store={store}>
-    <App />
+      <BrowserRouter>
+          <App />
+      </BrowserRouter>
   </Provider>
   , document.querySelector('.container'));
 
