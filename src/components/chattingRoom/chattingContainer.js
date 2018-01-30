@@ -4,8 +4,9 @@
 import { connect } from "react-redux";
 import chattingPage from "./chattingPage";
 
-const mapStateToProps = (state) => {
-    return state;
+const mapStateToProps = ({chatting}) => {
+    const {key, loading} = chatting;
+    return {key, loading};
 };
 
 const mapDispatchToProps = (dispatch) => {

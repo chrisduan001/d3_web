@@ -37,11 +37,13 @@ class chattingPage extends Component {
     }
 
     render() {
-        if (!this.key) {
-            return (
-                <div><b>Invalid: Please re-enter room number</b></div>
-            );
-        }
+        // if (!this.key) {
+        //     return (
+        //         <div><b>Invalid: Please re-enter room number</b></div>
+        //     );
+        // }
+
+        const {loading} = this.props;
 
         return (
             <div className="chatContainer">
@@ -64,13 +66,16 @@ class chattingPage extends Component {
                         <textarea />
                     </div>
                 </div>
+
+                {loading ? <div className="progressRing center" /> : null}
             </div>
         )
     }
 }
 
 chattingPage.propTypes = {
-
+    key: PropTypes.string,
+    loading: PropTypes.bool
 };
 
 chattingPage.contextTypes = {
