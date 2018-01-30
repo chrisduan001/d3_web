@@ -3,15 +3,18 @@
  */
 import { connect } from "react-redux";
 import chattingPage from "./chattingPage";
+import * as actionType from "../../shared/types";
 
 const mapStateToProps = ({chatting}) => {
-    const {key, loading} = chatting;
-    return {key, loading};
+    const {loading, errorMessage} = chatting;
+    return {loading, errorMessage};
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
-
+        loadRoomInfo: () => {
+            dispatch({type: actionType.CHATTING_GET_ROOM_INFO});
+        }
     }
 };
 

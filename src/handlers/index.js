@@ -1,10 +1,10 @@
 import { combineEpics } from "redux-observable";
 import enterChatRoomEpic from "./landing/enterChatRoomEpic";
-import validateKeyEpic from "./chatting/validateKeyEpic";
+import getRoomInfoEpic from "./chatting/getRoomInfoEpic";
 
 const epics = [
     enterChatRoomEpic,
-    validateKeyEpic
+    getRoomInfoEpic
 ];
 
 const rootEpic = combineEpics(...epics);

@@ -2,12 +2,13 @@
  * Created with template on 1/28/18.
  */
 import io from "socket.io-client";
-import {SOCKET_ERROR, SOCKET_ENTER_ROOM, SOCKET_DISCONNECT} from "../shared/types";
+import {SOCKET_ERROR, SOCKET_ENTER_ROOM, SOCKET_ROOM_INFO, SOCKET_SEND_ROOM_INFO} from "../shared/types";
 import { _emitter } from "../index";
 
+let socket;
 export const connectSocket = (roomNumber, userName) => {
     const config = window.config;
-    const socket = io.connect(config.baseUrl, {query: {userName, roomNumber}});
+    socket = io.connect(config.baseUrl, {query: {userName, roomNumber}});
 
     socket.on("connect", () => {});
 
@@ -23,4 +24,17 @@ export const connectSocket = (roomNumber, userName) => {
         _emitter.emit(SOCKET_ERROR, "Room full, only support 2 people at the moment");
         socket.disconnect();
     });
+
+    socket.on(SOCKET_SEND_ROOM_INFO, (message) => {
+        _emitter.emit(SOCKET_ROOM_INFO, message);
+    });
+};
+
+export const emitSocketMessage = (type, message = {}) => {
+    socket.emit(type, message);
+};
+
+export const isSocketValid = () => {
+    console.log(socket);
+    return socket !== undefined;
 };

@@ -4,15 +4,25 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import {} from "react-router-dom";
+import {_emitter} from "../../index";
+import {SOCKET_ROOM_INFO, SOCKET_ENTER_ROOM} from "../../shared/types";
 
 class chattingPage extends Component {
     componentWillMount() {
-        const historyState = this.props.history.location.state;
-        if (historyState) {
-            this.key = historyState.roomKey;
-        }
-        //key can only be used once
-        this.props.history.replace({...this.props.history, state: undefined});
+        this.roomInfoEmitter = _emitter.addListener(SOCKET_ROOM_INFO, (msg) => {
+            console.log(msg);
+        });
+
+        this.enterRoomEmitter = _emitter.addListener(SOCKET_ENTER_ROOM, (userName) => {
+            console.log(userName + " joined the room");
+        });
+
+        this.props.loadRoomInfo();
+    }
+
+    componentWillUnmount() {
+        this.roomInfoEmitter.remove();
+        this.enterRoomEmitter.remove();
     }
 
     renderActiveVoiceCall() {
@@ -37,13 +47,15 @@ class chattingPage extends Component {
     }
 
     render() {
-        // if (!this.key) {
-        //     return (
-        //         <div><b>Invalid: Please re-enter room number</b></div>
-        //     );
-        // }
+        const {loading, errorMessage} = this.props;
 
-        const {loading} = this.props;
+        if (errorMessage) {
+            return (
+                <div><b>{errorMessage}</b></div>
+            );
+        }
+
+        if (loading) { return <div className="progressRing center" /> }
 
         return (
             <div className="chatContainer">
@@ -66,8 +78,6 @@ class chattingPage extends Component {
                         <textarea />
                     </div>
                 </div>
-
-                {loading ? <div className="progressRing center" /> : null}
             </div>
         )
     }
@@ -75,7 +85,9 @@ class chattingPage extends Component {
 
 chattingPage.propTypes = {
     key: PropTypes.string,
-    loading: PropTypes.bool
+    errorMessage: PropTypes.string,
+    loading: PropTypes.bool,
+    loadRoomInfo: PropTypes.func.isRequired
 };
 
 chattingPage.contextTypes = {
