@@ -6,15 +6,18 @@ import PropTypes from "prop-types";
 import {} from "react-router-dom";
 import {_emitter} from "../../index";
 import {SOCKET_ROOM_INFO, SOCKET_ENTER_ROOM} from "../../shared/types";
+import _ from "lodash";
 
 class chattingPage extends Component {
     componentWillMount() {
-        this.roomInfoEmitter = _emitter.addListener(SOCKET_ROOM_INFO, (msg) => {
-            console.log(msg);
+        this.userName = this.props.history.location.state.userName;
+
+        this.roomInfoEmitter = _emitter.addListener(SOCKET_ROOM_INFO, ({message}) => {
+            this.props.onGetRoomInfo(_.find(message, (user) => user !== this.userName));
         });
 
         this.enterRoomEmitter = _emitter.addListener(SOCKET_ENTER_ROOM, (userName) => {
-            console.log(userName + " joined the room");
+            this.props.onGuestJoinRoom(userName);
         });
 
         this.props.loadRoomInfo();
@@ -46,6 +49,25 @@ class chattingPage extends Component {
         );
     }
 
+    renderUserSection() {
+        return (
+            <div className="userSection">
+                <div className="userContainer">
+                    <b>{this.userName}</b>
+                </div>
+                {
+                    _.isEmpty(this.props.guestName) ? null :
+                        <div className="userContainer">
+                            <b>{this.props.guestName}</b>
+                            <img className="voiceCallIcon" src="../../../src/shared/images/phone.png" />
+                            <img className="videoCallIcon" src="../../../src/shared/images/video.png" />
+                        </div>
+                }
+
+            </div>
+        )
+    }
+
     render() {
         const {loading, errorMessage} = this.props;
 
@@ -62,11 +84,7 @@ class chattingPage extends Component {
                 <div className="videoContainer">
                     {this.renderActiveVideoCall()}
 
-                    <div className="userSection">
-                        <b>User Name</b>
-                        <img className="voiceCallIcon" src="../../../src/shared/images/phone.png" />
-                        <img className="videoCallIcon" src="../../../src/shared/images/video.png" />
-                    </div>
+                    {this.renderUserSection()}
                 </div>
 
                 <div className="messageContainer">
@@ -87,7 +105,10 @@ chattingPage.propTypes = {
     key: PropTypes.string,
     errorMessage: PropTypes.string,
     loading: PropTypes.bool,
-    loadRoomInfo: PropTypes.func.isRequired
+    guestName: PropTypes.string,
+    loadRoomInfo: PropTypes.func.isRequired,
+    onGetRoomInfo: PropTypes.func.isRequired,
+    onGuestJoinRoom: PropTypes.func.isRequired
 };
 
 chattingPage.contextTypes = {

@@ -8,8 +8,8 @@ import {SOCKET_ENTER_ROOM, SOCKET_ERROR} from "../../shared/types";
 
 class landingForm extends Component {
     componentWillMount() {
-        this.enterRoomEmitter = _emitter.addListener(SOCKET_ENTER_ROOM, (msg) => {
-            this.context.router.history.push({pathname: "/room", state: {roomKey: "xzyzz"}});
+        this.enterRoomEmitter = _emitter.addListener(SOCKET_ENTER_ROOM, (userName) => {
+            this.context.router.history.push({pathname: "/room", state: {userName}});
         });
 
         this.errorEmitter = _emitter.addListener(SOCKET_ERROR, (msg) => {
