@@ -6,8 +6,8 @@ import chattingPage from "./chattingPage";
 import * as actionType from "../../shared/types";
 
 const mapStateToProps = ({chatting}) => {
-    const {loading, errorMessage, guestName} = chatting;
-    return {loading, errorMessage, guestName};
+    const {loading, errorMessage, guestName, callActivated, videoActivated, messageInput} = chatting;
+    return {loading, errorMessage, guestName, callActivated, videoActivated, messageInput};
 };
 
 const mapDispatchToProps = (dispatch) => {
@@ -20,6 +20,12 @@ const mapDispatchToProps = (dispatch) => {
         },
         onGuestJoinRoom: (guestName) => {
             dispatch({type: actionType.CHATTING_GUEST_JOIN, payload: guestName});
+        },
+        onGuestLeaveRoom: () => {
+            dispatch({type: actionType.CHATTING_GUEST_LEAVE});
+        },
+        onTypeMessage: (message) => {
+            dispatch({type: actionType.CHATTING_INPUT_MESSAGE, payload: message});
         }
     }
 };

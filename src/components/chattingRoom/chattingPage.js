@@ -5,7 +5,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import {} from "react-router-dom";
 import {_emitter} from "../../index";
-import {SOCKET_ROOM_INFO, SOCKET_ENTER_ROOM} from "../../shared/types";
+import {SOCKET_ROOM_INFO, SOCKET_ENTER_ROOM, SOCKET_USER_DISCONNECTED} from "../../shared/types";
 import _ from "lodash";
 
 class chattingPage extends Component {
@@ -20,15 +20,20 @@ class chattingPage extends Component {
             this.props.onGuestJoinRoom(userName);
         });
 
+        this.disconnectEmitter = _emitter.addListener(SOCKET_USER_DISCONNECTED, () => {
+            this.props.onGuestLeaveRoom();
+        });
+
         this.props.loadRoomInfo();
     }
 
     componentWillUnmount() {
         this.roomInfoEmitter.remove();
         this.enterRoomEmitter.remove();
+        this.disconnectEmitter.remove();
     }
 
-    renderActiveVoiceCall() {
+    static renderActiveVoiceCall() {
         return (
             <div className="voiceSection">
                 <img className="activeVoice" src="../../../src/shared/images/phone.png" />
@@ -36,7 +41,7 @@ class chattingPage extends Component {
         );
     }
 
-    renderActiveVideoCall() {
+    static renderActiveVideoCall() {
         return (
             <div className="videoSection">
                 <div className="activeUserVideo">
@@ -69,7 +74,7 @@ class chattingPage extends Component {
     }
 
     render() {
-        const {loading, errorMessage} = this.props;
+        const {loading, errorMessage, videoActivated, callActivated, messageInput, onTypeMessage} = this.props;
 
         if (errorMessage) {
             return (
@@ -82,7 +87,12 @@ class chattingPage extends Component {
         return (
             <div className="chatContainer">
                 <div className="videoContainer">
-                    {this.renderActiveVideoCall()}
+
+                    {
+                        (videoActivated || callActivated) ?
+                            videoActivated ? this.renderActiveVideoCall() : this.renderActiveVoiceCall()
+                            : <div className="videoSection" />
+                    }
 
                     {this.renderUserSection()}
                 </div>
@@ -93,7 +103,12 @@ class chattingPage extends Component {
                     </div>
 
                     <div className="inputBox">
-                        <textarea />
+                        <textarea className="textField"
+                                  onChange={e => onTypeMessage(e.target.value)}
+                                  value={messageInput}
+                        />
+
+                        <button className="btn btn-primary" type="submit">Send</button>
                     </div>
                 </div>
             </div>
@@ -104,11 +119,16 @@ class chattingPage extends Component {
 chattingPage.propTypes = {
     key: PropTypes.string,
     errorMessage: PropTypes.string,
+    callActivated: PropTypes.bool,
+    videoActivated: PropTypes.bool,
     loading: PropTypes.bool,
     guestName: PropTypes.string,
+    messageInput: PropTypes.string,
     loadRoomInfo: PropTypes.func.isRequired,
     onGetRoomInfo: PropTypes.func.isRequired,
-    onGuestJoinRoom: PropTypes.func.isRequired
+    onGuestJoinRoom: PropTypes.func.isRequired,
+    onGuestLeaveRoom: PropTypes.func.isRequired,
+    onTypeMessage: PropTypes.func.isRequired
 };
 
 chattingPage.contextTypes = {

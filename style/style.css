@@ -108,7 +108,12 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: row;
     border-top: solid gainsboro 2px;
+}
+
+.textField {
+    margin-right: 10px;
 }
 
 /*common*/

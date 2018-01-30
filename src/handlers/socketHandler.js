@@ -2,7 +2,13 @@
  * Created with template on 1/28/18.
  */
 import io from "socket.io-client";
-import {SOCKET_ERROR, SOCKET_ENTER_ROOM, SOCKET_ROOM_INFO, SOCKET_SEND_ROOM_INFO} from "../shared/types";
+import {
+    SOCKET_ERROR,
+    SOCKET_ENTER_ROOM,
+    SOCKET_ROOM_INFO,
+    SOCKET_SEND_ROOM_INFO,
+    SOCKET_USER_DISCONNECTED
+} from "../shared/types";
 import { _emitter } from "../index";
 
 let socket;
@@ -16,8 +22,8 @@ export const connectSocket = (roomNumber, userName) => {
         _emitter.emit(SOCKET_ENTER_ROOM, data.userName);
     });
 
-    socket.on("disconnect", () => {
-        console.log("disconnected");
+    socket.on(SOCKET_USER_DISCONNECTED, () => {
+        _emitter.emit(SOCKET_USER_DISCONNECTED);
     });
 
     socket.on("room full", () => {
