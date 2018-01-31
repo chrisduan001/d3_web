@@ -2,6 +2,8 @@
  * Created with template on 1/30/18.
  */
 import * as socket from "./socketHandler";
+import { _emitter } from "../index";
+import {RTC_RECEIVE_MESSAGE} from "../shared/types";
 
 const configuration = {
     'iceServers': [{
@@ -19,6 +21,7 @@ let dataChannel;
 
 const receiveDataChannelMessage = (evt) => {
     console.log(evt.data);
+    _emitter.emit(RTC_RECEIVE_MESSAGE, evt.data);
 };
 
 const receiveChannelCallback = () => {

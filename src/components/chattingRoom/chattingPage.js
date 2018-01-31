@@ -5,10 +5,16 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import {} from "react-router-dom";
 import {_emitter} from "../../index";
-import {SOCKET_ROOM_INFO, SOCKET_ENTER_ROOM, SOCKET_USER_DISCONNECTED} from "../../shared/types";
+import {SOCKET_ROOM_INFO, SOCKET_ENTER_ROOM, SOCKET_USER_DISCONNECTED, RTC_RECEIVE_MESSAGE} from "../../shared/types";
 import _ from "lodash";
 
 class chattingPage extends Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {messages: []};
+    }
+
     componentWillMount() {
         this.userName = this.props.history.location.state.userName;
 
@@ -27,6 +33,10 @@ class chattingPage extends Component {
             this.props.onGuestLeaveRoom();
         });
 
+        this.receiveMessageEmitter = _emitter.addListener(RTC_RECEIVE_MESSAGE, message => {
+            this.onNewMessage(message);
+        });
+
         this.props.loadRoomInfo();
     }
 
@@ -34,6 +44,18 @@ class chattingPage extends Component {
         this.roomInfoEmitter.remove();
         this.enterRoomEmitter.remove();
         this.disconnectEmitter.remove();
+        this.receiveMessageEmitter.remove();
+    }
+
+    onNewMessage(message) {
+        const stateMessages = this.state.messages;
+        stateMessages.push(message);
+        this.setState({messages: stateMessages});
+
+        //Set timeout so the refs.length won't throw exception
+        setTimeout(() => {
+            this.refs[Object.keys(this.refs).length - 1].scrollIntoView({block: 'end', behavior: 'smooth'});
+        }, 500);
     }
 
     static renderActiveVoiceCall() {
@@ -85,6 +107,12 @@ class chattingPage extends Component {
         )
     }
 
+    renderMessages() {
+        return this.state.messages.map((message, index) => {
+            return (<li key={index} ref={index}>{message}</li>);
+        });
+    }
+
     render() {
         const {
             loading,
@@ -119,7 +147,7 @@ class chattingPage extends Component {
 
                 <div className="messageContainer">
                     <div className="messageBox">
-                        message box
+                        {this.renderMessages()}
                     </div>
 
                     <div className="inputBox">
@@ -131,7 +159,10 @@ class chattingPage extends Component {
                         <button
                             className="btn btn-primary"
                             type="submit"
-                            onClick={v => sendMessage(this.userName, messageInput)}
+                            onClick={v => {
+                                this.onNewMessage(this.userName + ": " + messageInput);
+                                sendMessage(this.userName, messageInput)
+                            }}
                         >Send</button>
 
                     </div>

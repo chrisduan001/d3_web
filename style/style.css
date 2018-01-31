@@ -100,7 +100,11 @@
 .messageBox {
     flex: 9;
     display: flex;
-    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    overflow: hidden;
+    overflow-y: scroll;
+    align-self: stretch;
 }
 
 .inputBox {
