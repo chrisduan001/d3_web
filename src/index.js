@@ -22,7 +22,7 @@ export const _emitter = new EventEmitter();
 const appConfig = {
     prod: {
         mode: "prod",
-        baseUrl: ""
+        baseUrl: "https://digit3.me"
     },
 
     dev: {
