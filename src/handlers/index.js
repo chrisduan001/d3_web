@@ -4,13 +4,15 @@ import getRoomInfoEpic from "./chatting/getRoomInfoEpic";
 import signalingEpic from "./chatting/signalingEpic";
 import sendMessageEpic from "./chatting/sendMessageEpic";
 import setUpRtcEpic from "./chatting/setUpRtcEpic";
+import startCallEpic from "./chatting/startCallEpic";
 
 const epics = [
     enterChatRoomEpic,
     getRoomInfoEpic,
     signalingEpic,
     sendMessageEpic,
-    setUpRtcEpic
+    setUpRtcEpic,
+    startCallEpic
 ];
 
 const rootEpic = combineEpics(...epics);

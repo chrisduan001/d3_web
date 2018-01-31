@@ -2,13 +2,12 @@
  * Created with template on 1/29/18.
  */
 import * as actionType from "../../shared/types";
+import * as webrtc from "../../handlers/webRtcHandler";
 
 const INITIAL_STATE = {
     loading: true,
     errorMessage: "",
     guestName: "",
-    callActivated: false,
-    videoActivated: false,
     messageInput: ""
 };
 

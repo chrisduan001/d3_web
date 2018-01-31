@@ -12,7 +12,7 @@ class chattingPage extends Component {
     constructor(props) {
         super(props);
 
-        this.state = {messages: []};
+        this.state = {messages: [], requestingCall: false, receivedVoiceCall: false, receivedVideoCall: false};
     }
 
     componentWillMount() {
@@ -39,6 +39,9 @@ class chattingPage extends Component {
             this.onNewMessage(message);
         });
 
+        this.streamEmitter = _emitter.addListener("stream", evt => {
+            this.guestVideo.src = URL.createObjectURL(evt.stream);
+        });
         this.props.loadRoomInfo();
     }
 
@@ -47,6 +50,7 @@ class chattingPage extends Component {
         this.enterRoomEmitter.remove();
         this.disconnectEmitter.remove();
         this.receiveMessageEmitter.remove();
+        this.streamEmitter.remove();
     }
 
     onNewMessage(message) {
@@ -60,29 +64,35 @@ class chattingPage extends Component {
         }, 500);
     }
 
-    static renderActiveVoiceCall() {
-        return (
-            <div className="voiceSection">
-                <img className="activeVoice" src="../../../src/shared/images/phone.png" />
-            </div>
-        );
-    }
-
-    static renderActiveVideoCall() {
+    renderActiveVideoCall() {
         return (
             <div className="videoSection">
                 <div className="activeUserVideo">
-                    <img className="activeUserVideoIcon" src="../../../src/shared/images/phone.png" />
+                    <video width="300" height="300" ref={video => {this.guestVideo = video}} autoPlay />
                 </div>
                 <div className="activeMyVideo">
-                    <img className="activeMyVideoIcon" src="../../../src/shared/images/video.png" />
+                    <video width="150" height="150" ref={video => {this.myVideo = video}} autoPlay />
                 </div>
             </div>
         );
     }
 
+    createMediaStream() {
+        navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+
+        const constraints = {
+            audio: false,
+            video: true
+        };
+
+        navigator.getUserMedia(constraints, (stream) => {
+            this.props.onStartCall(stream);
+            this.myVideo.src = window.URL.createObjectURL(stream);
+        }, (err) => console.log(err));
+    }
+
     renderUserSection() {
-        const {guestName, startVoiceCall, startVideoCall} = this.props;
+        const {guestName} = this.props;
         return (
             <div className="userSection">
                 <div className="userContainer">
@@ -95,12 +105,7 @@ class chattingPage extends Component {
                             <img
                                 className="voiceCallIcon"
                                 src="../../../src/shared/images/phone.png"
-                                onClick={startVoiceCall}
-                            />
-                            <img
-                                className="videoCallIcon"
-                                src="../../../src/shared/images/video.png"
-                                onClick={startVideoCall}
+                                onClick={v => this.createMediaStream()}
                             />
                         </div>
                 }
@@ -119,8 +124,6 @@ class chattingPage extends Component {
         const {
             loading,
             errorMessage,
-            videoActivated,
-            callActivated,
             messageInput,
             onTypeMessage,
             sendMessage
@@ -138,11 +141,7 @@ class chattingPage extends Component {
             <div className="chatContainer">
                 <div className="videoContainer">
 
-                    {
-                        (videoActivated || callActivated) ?
-                            videoActivated ? this.renderActiveVideoCall() : this.renderActiveVoiceCall()
-                            : <div className="videoSection" />
-                    }
+                    {this.renderActiveVideoCall()}
 
                     {this.renderUserSection()}
                 </div>
@@ -177,8 +176,6 @@ class chattingPage extends Component {
 chattingPage.propTypes = {
     key: PropTypes.string,
     errorMessage: PropTypes.string,
-    callActivated: PropTypes.bool,
-    videoActivated: PropTypes.bool,
     loading: PropTypes.bool,
     guestName: PropTypes.string,
     messageInput: PropTypes.string,
@@ -187,8 +184,7 @@ chattingPage.propTypes = {
     onGuestJoinRoom: PropTypes.func.isRequired,
     onGuestLeaveRoom: PropTypes.func.isRequired,
     onTypeMessage: PropTypes.func.isRequired,
-    startVoiceCall: PropTypes.func.isRequired,
-    startVideoCall: PropTypes.func.isRequired,
+    onStartCall: PropTypes.func.isRequired,
     sendMessage: PropTypes.func.isRequired,
     setUpRtc: PropTypes.func.isRequired
 };

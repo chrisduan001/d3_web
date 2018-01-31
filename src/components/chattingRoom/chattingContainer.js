@@ -6,8 +6,8 @@ import chattingPage from "./chattingPage";
 import * as actionType from "../../shared/types";
 
 const mapStateToProps = ({chatting}) => {
-    const {loading, errorMessage, guestName, callActivated, videoActivated, messageInput} = chatting;
-    return {loading, errorMessage, guestName, callActivated, videoActivated, messageInput};
+    const {loading, errorMessage, guestName, callActivated, messageInput} = chatting;
+    return {loading, errorMessage, guestName, callActivated, messageInput};
 };
 
 const mapDispatchToProps = (dispatch) => {
@@ -30,11 +30,8 @@ const mapDispatchToProps = (dispatch) => {
         onTypeMessage: (message) => {
             dispatch({type: actionType.CHATTING_INPUT_MESSAGE, payload: message});
         },
-        startVoiceCall: () => {
-            dispatch({type: actionType.CHATTING_START_VOICE_CALL});
-        },
-        startVideoCall: () => {
-            dispatch({type: actionType.CHATTING_START_VIDEO_CALL});
+        onStartCall: (stream) => {
+            dispatch({type: actionType.CHATTING_START_CALL, payload: stream});
         },
         sendMessage: (userName, message) => {
             dispatch({type: actionType.CHATTING_SEND_MESSAGE, payload: {userName, message}})

@@ -84,7 +84,14 @@ export const initRtc = () => {
 
     rtcPeerConn.onaddstream = (evt) => {
         console.log("on add stream");
+        _emitter.emit("stream", evt);
     }
+};
+
+export const startCall = (stream) => {
+    rtcPeerConn.addStream(stream);
+
+    createOffer();
 };
 
 export const createOffer = () => {

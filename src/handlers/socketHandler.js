@@ -2,13 +2,7 @@
  * Created with template on 1/28/18.
  */
 import io from "socket.io-client";
-import {
-    SOCKET_ERROR,
-    SOCKET_ENTER_ROOM,
-    SOCKET_ROOM_INFO,
-    SOCKET_SEND_ROOM_INFO,
-    SOCKET_USER_DISCONNECTED
-} from "../shared/types";
+import * as actionType from "../shared/types";
 import { _emitter } from "../index";
 import * as webRtc from "./webRtcHandler";
 
@@ -20,20 +14,20 @@ export const connectSocket = (roomNumber, userName) => {
     socket.on("connect", () => {});
 
     socket.on("join room", data => {
-        _emitter.emit(SOCKET_ENTER_ROOM, data.userName);
+        _emitter.emit(actionType.SOCKET_ENTER_ROOM, data.userName);
     });
 
-    socket.on(SOCKET_USER_DISCONNECTED, () => {
-        _emitter.emit(SOCKET_USER_DISCONNECTED);
+    socket.on(actionType.SOCKET_USER_DISCONNECTED, () => {
+        _emitter.emit(actionType.SOCKET_USER_DISCONNECTED);
     });
 
     socket.on("room full", () => {
-        _emitter.emit(SOCKET_ERROR, "Room full, only support 2 people at the moment");
+        _emitter.emit(actionType.SOCKET_ERROR, "Room full, only support 2 people at the moment");
         socket.disconnect();
     });
 
-    socket.on(SOCKET_SEND_ROOM_INFO, (message) => {
-        _emitter.emit(SOCKET_ROOM_INFO, message);
+    socket.on(actionType.SOCKET_SEND_ROOM_INFO, (message) => {
+        _emitter.emit(actionType.SOCKET_ROOM_INFO, message);
     });
 
     socket.on("receive_sdp", (data) => {
@@ -42,7 +36,7 @@ export const connectSocket = (roomNumber, userName) => {
 
     socket.on("receive_ice_candidate", data => {
         webRtc.receiveIceCandidate(data.message);
-    })
+    });
 };
 
 export const emitSocketMessage = (type, message = {}) => {
