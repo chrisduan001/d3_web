@@ -65,7 +65,7 @@ export const receiveIceCandidate = ({candidate}) => {
     rtcPeerConn.addIceCandidate(new RTCIceCandidate(candidate));
 };
 
-export const startSignaling = (shouldCreateOffer) => {
+export const initRtc = () => {
     rtcPeerConn = new RTCPeerConnection(configuration);
 
     console.log("starting signalingl...");
@@ -82,23 +82,20 @@ export const startSignaling = (shouldCreateOffer) => {
         }
     };
 
-    rtcPeerConn.onnegotiationneeded = () => {
-        if (!shouldCreateOffer) return;
-        console.log("on negotiation needed");
-
-        rtcPeerConn.createOffer()
-            .then(offer => {
-                return rtcPeerConn.setLocalDescription(offer);
-            })
-            .then(() => {
-                socket.sendSdp(rtcPeerConn.localDescription);
-            })
-            .catch(err => console.log(err));
-    };
-
     rtcPeerConn.onaddstream = (evt) => {
         console.log("on add stream");
     }
+};
+
+export const createOffer = () => {
+    rtcPeerConn.createOffer()
+        .then(offer => {
+            return rtcPeerConn.setLocalDescription(offer);
+        })
+        .then(() => {
+            socket.sendSdp(rtcPeerConn.localDescription);
+        })
+        .catch(err => console.log(err));
 };
 
 export const sendMesage = (userName, message) => {

@@ -12,6 +12,9 @@ const mapStateToProps = ({chatting}) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
+        setUpRtc: () => {
+            dispatch({type: actionType.CHATTING_RTC_SETUP});
+        },
         loadRoomInfo: () => {
             dispatch({type: actionType.CHATTING_GET_ROOM_INFO});
         },

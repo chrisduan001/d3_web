@@ -7,13 +7,9 @@ import * as webRtc from "../webRtcHandler";
 import _ from "lodash";
 
 const signalingEpic = (action$, store) => {
-    return action$.filter(action => _.includes([CHATTING_ROOM_INFO, CHATTING_GUEST_JOIN], action.type))
+    return action$.ofType(CHATTING_GUEST_JOIN)
         .switchMap(action => {
-            if (action.type === CHATTING_ROOM_INFO && action.payload) {
-                webRtc.startSignaling(false);
-            } else if (action.type === CHATTING_GUEST_JOIN){
-                webRtc.startSignaling(true);
-            }
+            webRtc.createOffer();
 
             return Observable.empty();
         });

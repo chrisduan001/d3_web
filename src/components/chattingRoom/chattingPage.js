@@ -18,6 +18,8 @@ class chattingPage extends Component {
     componentWillMount() {
         this.userName = this.props.history.location.state.userName;
 
+        this.props.setUpRtc();
+
         this.roomInfoEmitter = _emitter.addListener(SOCKET_ROOM_INFO, ({message}) => {
             console.log("on get room info");
             this.props.onGotRoomInfo(_.find(message, (user) => user !== this.userName));
@@ -187,7 +189,8 @@ chattingPage.propTypes = {
     onTypeMessage: PropTypes.func.isRequired,
     startVoiceCall: PropTypes.func.isRequired,
     startVideoCall: PropTypes.func.isRequired,
-    sendMessage: PropTypes.func.isRequired
+    sendMessage: PropTypes.func.isRequired,
+    setUpRtc: PropTypes.func.isRequired
 };
 
 chattingPage.contextTypes = {
