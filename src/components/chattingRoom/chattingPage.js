@@ -5,14 +5,17 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import {} from "react-router-dom";
 import {_emitter} from "../../index";
-import {SOCKET_ROOM_INFO, SOCKET_ENTER_ROOM, SOCKET_USER_DISCONNECTED, RTC_RECEIVE_MESSAGE} from "../../shared/types";
+import {
+    SOCKET_ROOM_INFO, SOCKET_ENTER_ROOM, SOCKET_USER_DISCONNECTED, RTC_RECEIVE_MESSAGE,
+    RTC_ON_ADD_STREAM, RTC_START_STREAM
+} from "../../shared/types";
 import _ from "lodash";
 
 class chattingPage extends Component {
     constructor(props) {
         super(props);
 
-        this.state = {messages: [], requestingCall: false, receivedVoiceCall: false, receivedVideoCall: false};
+        this.state = {messages: [], enableVideo: false};
     }
 
     componentWillMount() {
@@ -39,9 +42,16 @@ class chattingPage extends Component {
             this.onNewMessage(message);
         });
 
-        this.streamEmitter = _emitter.addListener("stream", evt => {
+        this.addStreamEmitter = _emitter.addListener(RTC_ON_ADD_STREAM, evt => {
             this.guestVideo.src = URL.createObjectURL(evt.stream);
         });
+
+        this.startStreamEmitter = _emitter.addListener(RTC_START_STREAM, enableVideo => {
+            console.log("receiver should enable video: " + enableVideo);
+            this.createMediaStream(false, enableVideo);
+        });
+
+
         this.props.loadRoomInfo();
     }
 
@@ -50,7 +60,8 @@ class chattingPage extends Component {
         this.enterRoomEmitter.remove();
         this.disconnectEmitter.remove();
         this.receiveMessageEmitter.remove();
-        this.streamEmitter.remove();
+        this.addStreamEmitter.remove();
+        this.startStreamEmitter.remove();
     }
 
     onNewMessage(message) {
@@ -77,16 +88,22 @@ class chattingPage extends Component {
         );
     }
 
-    createMediaStream() {
+    createMediaStream(isInitCall, enableVideo = this.state.enableVideo) {
         navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 
         const constraints = {
             audio: false,
-            video: true
+            video: enableVideo
         };
 
         navigator.getUserMedia(constraints, (stream) => {
-            this.props.onStartCall(stream);
+            if (isInitCall) {
+                console.log(this.state.enableVideo);
+                this.props.onStartCall(stream, this.state.enableVideo);
+            } else {
+                this.props.onAnswerCall(stream);
+            }
+
             this.myVideo.src = window.URL.createObjectURL(stream);
         }, (err) => console.log(err));
     }
@@ -105,8 +122,13 @@ class chattingPage extends Component {
                             <img
                                 className="voiceCallIcon"
                                 src="../../../src/shared/images/phone.png"
-                                onClick={v => this.createMediaStream()}
+                                onClick={v => this.createMediaStream(true)}
                             />
+                            <input type="checkbox"
+                                   value="Enable video"
+                                   checked={this.state.enableVideo}
+                                   onChange={v =>this.setState({enableVideo: !this.state.enableVideo})} />
+                            <label>Enable video</label>
                         </div>
                 }
 
@@ -185,6 +207,7 @@ chattingPage.propTypes = {
     onGuestLeaveRoom: PropTypes.func.isRequired,
     onTypeMessage: PropTypes.func.isRequired,
     onStartCall: PropTypes.func.isRequired,
+    onAnswerCall: PropTypes.func.isRequired,
     sendMessage: PropTypes.func.isRequired,
     setUpRtc: PropTypes.func.isRequired
 };

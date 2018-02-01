@@ -3,7 +3,8 @@
  */
 import * as socket from "./socketHandler";
 import { _emitter } from "../index";
-import {RTC_RECEIVE_MESSAGE} from "../shared/types";
+import {RTC_ON_ADD_STREAM, RTC_RECEIVE_MESSAGE, RTC_START_STREAM} from "../shared/types";
+import _ from "lodash";
 
 const configuration = {
     'iceServers': [{
@@ -38,26 +39,34 @@ const handleSendChannelStatusChange = () => {
     }
 };
 
-const setRemoteDesc = (desc) => {
+const setRemoteDesc = (desc, options) => {
     rtcPeerConn.setRemoteDescription(desc)
         .then(() => {
             if (rtcPeerConn.remoteDescription.type === 'offer') {
-                rtcPeerConn.createAnswer()
-                    .then(offer => {
-                        return rtcPeerConn.setLocalDescription(offer);
-                    })
-                    .then(() => {
-                        socket.sendSdp(rtcPeerConn.localDescription);
-                    })
-                    .catch(error => console.log(error));
+                if (!_.isEmpty(options)) {
+                    _emitter.emit(RTC_START_STREAM, options.enableVideo);
+                    return;
+                }
+
+                createAnswer();
             }
         })
 };
 
-export const receiveSdp = ({sdp}) => {
-    console.log("receive sdp");
+const createAnswer = () => {
+    rtcPeerConn.createAnswer()
+        .then(offer => {
+            return rtcPeerConn.setLocalDescription(offer);
+        })
+        .then(() => {
+            socket.sendSdp(rtcPeerConn.localDescription);
+        })
+        .catch(error => console.log(error));
+};
+
+export const receiveSdp = ({sdp, options}) => {
     const desc = new RTCSessionDescription(sdp);
-    setRemoteDesc(desc);
+    setRemoteDesc(desc, options);
 };
 
 export const receiveIceCandidate = ({candidate}) => {
@@ -84,23 +93,28 @@ export const initRtc = () => {
 
     rtcPeerConn.onaddstream = (evt) => {
         console.log("on add stream");
-        _emitter.emit("stream", evt);
+        _emitter.emit(RTC_ON_ADD_STREAM, evt);
     }
 };
 
-export const startCall = (stream) => {
+export const startCall = ({stream, enableVideo}) => {
     rtcPeerConn.addStream(stream);
 
-    createOffer();
+    createOffer({enableVideo});
 };
 
-export const createOffer = () => {
+export const answerCall = ({stream}) => {
+    rtcPeerConn.addStream(stream);
+    createAnswer();
+};
+
+export const createOffer = (options = {}) => {
     rtcPeerConn.createOffer()
         .then(offer => {
             return rtcPeerConn.setLocalDescription(offer);
         })
         .then(() => {
-            socket.sendSdp(rtcPeerConn.localDescription);
+            socket.sendSdp(rtcPeerConn.localDescription, options);
         })
         .catch(err => console.log(err));
 };

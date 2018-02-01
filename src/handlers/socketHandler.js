@@ -54,7 +54,7 @@ export const sendIceCandidate = (candidate) => {
     console.log("send ice candidate");
 };
 
-export const sendSdp = (sdp) => {
-    socket.emit("send_sdp", {message: {sdp}});
+export const sendSdp = (sdp, options = {}) => {
+    socket.emit("send_sdp", {message: {sdp, options}});
 };
 

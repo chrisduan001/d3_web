@@ -30,8 +30,11 @@ const mapDispatchToProps = (dispatch) => {
         onTypeMessage: (message) => {
             dispatch({type: actionType.CHATTING_INPUT_MESSAGE, payload: message});
         },
-        onStartCall: (stream) => {
-            dispatch({type: actionType.CHATTING_START_CALL, payload: stream});
+        onStartCall: (stream, enableVideo) => {
+            dispatch({type: actionType.CHATTING_START_CALL, payload: {stream, enableVideo}});
+        },
+        onAnswerCall: (stream) => {
+            dispatch({type: actionType.CHATTING_ANSWER_CALL, payload: {stream}});
         },
         sendMessage: (userName, message) => {
             dispatch({type: actionType.CHATTING_SEND_MESSAGE, payload: {userName, message}})
