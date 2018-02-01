@@ -92,7 +92,7 @@ class chattingPage extends Component {
         navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 
         const constraints = {
-            audio: false,
+            audio: true,
             video: enableVideo
         };
 
